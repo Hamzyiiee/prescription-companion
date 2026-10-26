@@ -74,11 +74,21 @@ Editing a saved prescription replaces its medicine records and clears associated
 
 Follow the [manual walkthrough](docs/manual-checklist.md) to check the main flows with fictional sample data.
 
+## Optional command-line demos
+
+These print-only examples use fictional `TestMed` data. The OCR and pipeline examples use the included synthetic sample image and require Tesseract to be installed:
+
+```powershell
+.\.venv\Scripts\python.exe backend\demo_pipeline.py
+```
+
+The demo scripts are examples, not an automated test suite.
+
 ## Learning map
 
 - `backend/main.py`: API routes, validation, upload handling, and database operations.
 - `backend/ocr.py`: image preparation and the Tesseract OCR call.
-- `backend/parser.py`: turns recognized text into medicine fields.
+- `backend/parser.py`: turns recognized text into medicine fields. `backend/demo_parser.py` shows a synthetic example.
 - `backend/extractor.py`: an earlier text-extraction experiment; the app currently uses `parser.py` for structured fields.
 - `backend/models.py`: SQLite tables and relationships.
 - `backend/database.py`: database connection setup.
