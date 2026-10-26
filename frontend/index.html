@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prescription Companion</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="Prescription Companion home">
+      <span class="brand-mark" aria-hidden="true">+</span>
+      <span>Prescription Companion</span>
+    </a>
+    <span class="top-note">Your prescriptions, organized</span>
+  </header>
+
+  <main class="page-shell">
+    <section class="intro">
+      <p class="eyebrow">PRESCRIPTION WORKSPACE</p>
+      <h1>Turn a prescription into a clear medicine list.</h1>
+      <p class="intro-copy">Upload a clear image, check every detail, and save the corrected list.</p>
+    </section>
+
+    <section class="panel upload-panel" aria-labelledby="upload-heading">
+      <div class="section-heading">
+        <div>
+          <p class="step-label">STEP 1</p>
+          <h2 id="upload-heading">Upload prescription</h2>
+        </div>
+        <span class="step-number">01</span>
+      </div>
+      <form id="upload-form">
+        <label class="drop-zone" for="prescription-file">
+          <span class="upload-icon" aria-hidden="true">↑</span>
+          <span class="drop-title">Choose a prescription image</span>
+          <span class="drop-help">PNG, JPG, or WebP image (10 MB max)</span>
+          <span id="file-name" class="file-name">No file selected</span>
+        </label>
+        <input id="prescription-file" name="file" type="file" accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp" required>
+        <div id="image-crop-wrap" class="image-crop-wrap hidden">
+          <div class="crop-instructions"><strong>Optional: select the medicine area</strong><span>Drag over the part you want OCR to read. If you leave it unselected, the full image is used.</span></div>
+          <canvas id="image-crop-canvas" aria-label="Prescription image preview. Drag to select the area for OCR."></canvas>
+          <button id="reset-image-crop" class="button button-secondary crop-reset" type="button">Use full image</button>
+        </div>
+        <button id="upload-button" class="button button-primary" type="submit">Extract medicine details</button>
+        <button id="manual-entry-button" class="button button-secondary manual-entry-button" type="button">Enter medicine details manually</button>
+      </form>
+      <p class="privacy-note">Printed text works best. Handwriting may be read as gibberish; use manual entry and do not guess unclear medicine details. New images are processed for text extraction and removed afterward.</p>
+    </section>
+
+    <section id="review-section" class="panel review-panel hidden" aria-labelledby="review-heading">
+      <div class="section-heading">
+        <div>
+          <p class="step-label">STEP 2</p>
+          <h2 id="review-heading">Review the extracted details</h2>
+        </div>
+        <span class="step-number">02</span>
+      </div>
+      <div class="review-alert"><span aria-hidden="true">!</span><p>OCR can misread handwriting. Compare every field against the original; if anything is unclear, do not guess—ask a pharmacist or clinician.</p></div>
+      <details class="ocr-details">
+        <summary>Show text read from the image</summary>
+        <pre id="ocr-text">No OCR text available.</pre>
+      </details>
+      <button id="manual-entry-from-review" class="button button-secondary manual-entry-review" type="button">OCR unreadable? Enter details manually</button>
+      <div id="medicine-list" class="medicine-list"></div>
+      <button id="add-medicine" class="button button-secondary" type="button">+ Add a medicine</button>
+
+      <label class="review-confirmation">
+        <input id="review-confirmed" type="checkbox">
+        <span>I checked these details against the prescription and corrected anything uncertain.</span>
+      </label>
+      <button id="save-button" class="button button-primary" type="button" disabled>Save reviewed prescription</button>
+    </section>
+
+    <section class="panel saved-panel" aria-labelledby="saved-heading">
+      <div class="section-heading">
+        <div>
+          <p class="step-label">STEP 3</p>
+          <h2 id="saved-heading">Saved prescriptions</h2>
+        </div>
+        <button id="refresh-saved" class="button button-secondary refresh-button" type="button">Refresh list</button>
+      </div>
+      <div id="saved-list" class="saved-list" aria-live="polite">
+        <p class="empty-state">Loading saved prescriptions…</p>
+      </div>
+    </section>
+    <section class="panel schedule-panel" aria-labelledby="schedule-heading">
+      <div class="section-heading">
+        <div>
+          <p class="step-label">STEP 4</p>
+          <h2 id="schedule-heading">Medication schedule</h2>
+        </div>
+        <button id="refresh-schedules" class="button button-secondary refresh-button" type="button">Refresh</button>
+      </div>
+      <p class="schedule-note">Choose dates and clock times from the reviewed prescription. Browser reminders use only these times and work while this page is open.</p>
+      <div class="reminder-controls">
+        <button id="toggle-reminders" class="button button-secondary reminder-toggle" type="button">Enable browser reminders</button>
+        <p id="reminder-status" role="status" aria-live="polite">Reminders are off.</p>
+      </div>
+      <div class="day-view-header"><h3>Planned doses for a day</h3><div class="field"><label for="schedule-view-date">Choose date</label><input id="schedule-view-date" type="date"></div></div>
+      <div id="daily-schedule-list" class="daily-schedule-list" aria-live="polite"></div>
+      <div id="schedule-list" class="schedule-list" aria-live="polite">
+        <p class="empty-state">Loading schedules…</p>
+      </div>
+    </section>
+
+    <section id="schedule-editor" class="panel schedule-editor hidden" aria-labelledby="schedule-editor-heading">
+      <div class="section-heading">
+        <div>
+          <p class="step-label">PLAN A MEDICINE</p>
+          <h2 id="schedule-editor-heading">Set schedule dates and times</h2>
+        </div>
+      </div>
+      <p id="schedule-medicine-summary" class="schedule-note"></p>
+      <p id="schedule-frequency-note" class="schedule-frequency-note"></p>
+      <form id="schedule-form">
+        <div class="fields-grid date-fields">
+          <div class="field"><label for="schedule-start-date">Start date</label><input id="schedule-start-date" name="start_date" type="date" required></div>
+          <div class="field"><label for="schedule-end-date">End date</label><input id="schedule-end-date" name="end_date" type="date" required></div>
+        </div>
+        <div class="schedule-times-heading"><h3>Daily times</h3><button id="add-schedule-time" class="button button-secondary" type="button">+ Add time</button></div>
+        <div id="schedule-times" class="schedule-times"></div>
+        <button id="save-schedule" class="button button-primary" type="submit">Save schedule</button>
+        <button id="cancel-schedule" class="button button-secondary" type="button">Cancel</button>
+      </form>
+    </section>
+    <div id="status-message" class="status-message" role="status" aria-live="polite"></div>
+  </main>
+
+  <footer>Prescription Companion <span>•</span> Review extracted information carefully.</footer>
+</body>
+</html>

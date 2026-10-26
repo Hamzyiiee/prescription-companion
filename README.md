@@ -98,4 +98,3 @@ A beginner-friendly study order:
 ## Important limitations
 
 This is a learning project, not a medical device. Handwritten prescription OCR is not reliable with Tesseract and may produce gibberish. Always compare and correct every field against the original and ask a pharmacist or clinician if anything is unclear. The app does not recommend medicines or decide doses. Browser reminders require permission and the app page to remain open; they are not guaranteed when the browser is closed. “Taken” is a self-entered record only. This local version has no user accounts, encryption, cloud backup, or production deployment; do not expose it to the public internet or use it as the only record of medical instructions.
-
